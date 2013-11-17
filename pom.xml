@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.elksd</groupId>
 	<artifactId>elksd</artifactId>
-	<version>0.2.0</version>
+	<version>0.3.0-SNAPSHOT</version>
 
 	<properties>
 		<java.version>1.6</java.version>
@@ -11,7 +11,7 @@
 
 	<scm>
 		<developerConnection>scm:git:https://github.com/dkozic/elksd.git</developerConnection>
-	  <tag>elksd-0.2.0</tag>
+	  <tag>HEAD</tag>
   </scm>
 	<distributionManagement>
 		<repository>
