@@ -1,8 +1,11 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.elksd</groupId>
 	<artifactId>elksd</artifactId>
 	<version>0.3.0-SNAPSHOT</version>
+	<description>Reader of Serbian Identity Cards and Vehicle Registration Cards</description>
+	<url>https://github.com/dkozic/elksd</url>
 
 	<properties>
 		<java.version>1.6</java.version>
@@ -11,8 +14,17 @@
 
 	<scm>
 		<developerConnection>scm:git:https://github.com/dkozic/elksd.git</developerConnection>
-	  <tag>HEAD</tag>
-  </scm>
+		<tag>HEAD</tag>
+	</scm>
+
+	<licenses>
+		<license>
+			<name>LGPL 3.0 license</name>
+			<url>http://www.opensource.org/licenses/lgpl-3.0.html</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
 	<distributionManagement>
 		<repository>
 			<uniqueVersion>false</uniqueVersion>
@@ -21,14 +33,15 @@
 			<url>file:///c:/mavenrepo</url>
 			<layout>default</layout>
 		</repository>
-        <snapshotRepository>
-            <uniqueVersion>false</uniqueVersion>
-            <id>myMavenRepoSnapshot</id>
-            <name>My Maven Snapshot Repo</name>
-            <url>file:///c:/mavenreposnapshot</url>
-            <layout>default</layout>
-        </snapshotRepository>		
+		<snapshotRepository>
+			<uniqueVersion>false</uniqueVersion>
+			<id>myMavenRepoSnapshot</id>
+			<name>My Maven Snapshot Repo</name>
+			<url>file:///c:/mavenreposnapshot</url>
+			<layout>default</layout>
+		</snapshotRepository>
 	</distributionManagement>
+
 	<developers>
 		<developer>
 			<id>dkozic</id>
@@ -40,6 +53,7 @@
 			<timezone>+1</timezone>
 		</developer>
 	</developers>
+
 	<dependencies>
 
 		<!-- jUnit dependencies -->
@@ -93,16 +107,26 @@
 
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
-				<configuration>
-					<archive>
-						<manifest>
-							<mainClass>org.elksd.gui.ElksdApp</mainClass>
-						</manifest>
-					</archive>
-					<descriptorRefs>
-						<descriptorRef>jar-with-dependencies</descriptorRef>
-					</descriptorRefs>
-				</configuration>
+				<version>2.4</version>
+				<executions>
+					<execution>
+						<id>jar-assembly</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<archive>
+								<manifest>
+									<mainClass>org.elksd.gui.ElksdApp</mainClass>
+								</manifest>
+							</archive>
+							<descriptorRefs>
+								<descriptorRef>jar-with-dependencies</descriptorRef>
+							</descriptorRefs>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 
 			<plugin>
@@ -117,7 +141,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-release-plugin</artifactId>
-				<version>2.4.1</version>
+				<version>2.4.2</version>
 			</plugin>
 
 		</plugins>

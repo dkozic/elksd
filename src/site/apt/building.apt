@@ -1,0 +1,9 @@
+Building
+
+ eLKSD je realizovan kao Maven projekat.
+ 
++-- 
+mvn clean install
++-- 
+
+ U <<<target>>> folderu treba da se pojave dva .jar fajla: <<<elksd-x.y.z.jar>>> i <<<elksd-x.y.z-jar-with-dependencies.jar>>>.

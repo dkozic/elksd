@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project name="asw:utilitas">
+	<bannerLeft>
+		<name>eLKSD</name>
+	</bannerLeft>
+
+	<version position="right" />
+	<publishDate position="left" />
+	<body>
+
+		<menu name="eLKSD">
+			<item name="Introduction" href="introduction.html" />
+			<item name="Building" href="building.html" />
+			<item name="User guide" href="userguide.html" />
+		</menu>
+		<menu ref="reports" />
+
+	</body>
+</project>

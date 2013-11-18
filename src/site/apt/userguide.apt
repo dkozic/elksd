@@ -1,0 +1,44 @@
+Korisničko uputstvo
+
+* Preduslovi
+
+ Da biste pokrenuli program, potrebno je da imate instaliran JRE verziju 1.6 ili višu.
+ 
+* Pokretanje programa
+
+ Pokretanje programa se vrši izvršenjem sledeće komande:
+ 
++--
+java -jar elksd-x.y.z-jar-with-dependencies.jar
++-- 
+
+ Nakon pokretanja u donjem delu ekrana će se pojaviti odgovarajuća tray ikona:
+ 
+[trayicon.png] Tray Icon
+
+* Čitanje lične karte
+
+ Čitanje lične karte se pokreće automatski po stavljanju lične karte u čitač smart kartica. 
+ Nakon uspešnog čitanja, otvara se prozor na kojem su prikazani podaci iz lične karte.
+
+[elk.png] Čitanje lične karte
+
+* Čitanje saobraćajne dozvole
+
+ Čitanje saobraćajne dozvole se, takođe, pokreće automatski po stavljanju saobraćajne dozvole u čitač smart kartica. 
+ Nakon uspešnog čitanja, otvara se prozor na kojem su prikazani podaci iz saobraćajne dozvole.
+
+[esd.png] Čitanje saobraćajne dozvole
+
+* Podešavanje
+
+ Desnim klikom miša na tray ikonu otvara se meni:
+ 
+[trayiconmenu.png] Meni tray ikone
+
+ Izborom opcije <<Izlaz>> zaustavlja se izvršavanje programa.
+ 
+ Izborom opcije <<Jezik>> podešava se jezik prikaza. Podržani su sledeći jezici: engleski, srpski (latinica) i srpski (ćirilica).
+ 
+ Izborom opcije <<Debug>> podešava se količina poruka koje se ispisuju u log file. Opcija <<None>> isključuje logiranje u potpunosti, 
+ a opcija <<Debug>> daje najdetaljniji ispis u log fajl.  
