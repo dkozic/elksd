@@ -144,6 +144,27 @@
 				<version>2.4.2</version>
 			</plugin>
 
+			<plugin>
+				<groupId>com.github.github</groupId>
+				<artifactId>site-maven-plugin</artifactId>
+				<version>0.8</version>
+				<configuration>
+					<description>Official ${project.name} build of the
+						${project.version} release</description>
+					<message>Official ${project.name} build</message>
+					<server>github.com</server>
+					<repositoryName>elksd</repositoryName>
+					<repositoryOwner>dkozic</repositoryOwner>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>site</goal>
+						</goals>
+						<phase>site</phase>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 </project>
