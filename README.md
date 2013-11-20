@@ -1,5 +1,7 @@
-eLKSD ersion 0.3.0-SNAPSHOT 2013-11-20
+eLKSD
 =====
+
+eLKSAD version 0.3.0-SNAPSHOT 2013-11-20
 
 Reader of Serbian Identity Cards and Vehicle Registration Certificates 
 
