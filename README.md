@@ -1,7 +1,7 @@
 eLKSD
 =====
 
-eLKSAD version 0.3.0-SNAPSHOT 2013-11-20
+eLKSD version 0.3.0-SNAPSHOT 2013-11-20
 
 Reader of Serbian Identity Cards and Vehicle Registration Certificates 
 
@@ -34,5 +34,7 @@ java -jar elksd-x.y.z-jar-with-dependencies.jar
 eLKSD is released under LGPL 3.0 license.
 
 Project web site: [http://dkozic.github.io/elksd] (http://dkozic.github.io/elksd)
+
 Project repo: https://github.com/dkozic/elksd
+
 E-mail kozic.drazen@gmail.com
