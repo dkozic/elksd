@@ -120,7 +120,7 @@ public class ElkDataFactory {
 
 	// residence data
 	private String getState() {
-		return getResidence(TagResidence.TAG_2A);
+		return getResidence(TagResidence.TAG_20);
 	}
 
 	private String getComunity() {

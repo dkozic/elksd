@@ -1,11 +1,9 @@
 package org.elksd.gui.fop;
 
-import java.awt.image.ImagingOpException;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,7 +22,6 @@ import javax.xml.transform.stream.StreamSource;
 import org.apache.avalon.framework.configuration.Configuration;
 import org.apache.avalon.framework.configuration.ConfigurationException;
 import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder;
-import org.apache.fop.apps.FOURIResolver;
 import org.apache.fop.apps.Fop;
 import org.apache.fop.apps.FopFactory;
 import org.apache.fop.apps.MimeConstants;
@@ -182,7 +179,7 @@ public class FopExecutor {
 			TransformerFactory factory = TransformerFactory.newInstance();
 			Transformer transformer = factory.newTransformer(new StreamSource(
 					FopExecutor.class
-							.getResourceAsStream("/org/elksd/gui/esd.xsl")));
+							.getResourceAsStream("/org/elksd/gui/fop/esd.xsl")));
 
 			// Step 5: Setup input and output for XSLT transformation
 			// Setup input stream
@@ -258,7 +255,7 @@ public class FopExecutor {
 			TransformerFactory factory = TransformerFactory.newInstance();
 			Transformer transformer = factory.newTransformer(new StreamSource(
 					FopExecutor.class
-							.getResourceAsStream("/org/elksd/gui/elk.xsl")));
+							.getResourceAsStream("/org/elksd/gui/fop/elk.xsl")));
 
 			// Step 5: Setup input and output for XSLT transformation
 			// Setup input stream

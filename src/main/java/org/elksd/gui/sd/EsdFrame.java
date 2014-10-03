@@ -6,6 +6,8 @@ import java.awt.FlowLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -14,6 +16,14 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Logger;
 import org.elksd.gui.Messages;
@@ -29,6 +39,7 @@ public class EsdFrame extends JFrame {
 	private JPanel contentPane;
 	private EsdPanel esdPanel;
 	private JButton btnPrint;
+	private JButton btnSave;
 
 	public EsdFrame() {
 		setResizable(false);
@@ -74,6 +85,28 @@ public class EsdFrame extends JFrame {
 		});
 		headerPanel.add(btnPrint);
 
+		btnSave = new JButton();
+		btnSave.setPreferredSize(new Dimension(50, 50));
+		btnSave.setMinimumSize(new Dimension(50, 50));
+		btnSave.setMaximumSize(new Dimension(50, 50));
+		btnSave.setHorizontalTextPosition(SwingConstants.CENTER);
+		btnSave.setMnemonic('S');
+		btnSave.setToolTipText(Messages
+				.getString("EsdFrame.btnSave.toolTipText")); //$NON-NLS-1$
+		btnSave.setIcon(new ImageIcon(EsdFrame.class
+				.getResource("/org/elksd/gui/images/disk.png")));
+		btnSave.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+				try {
+					save();
+				} catch (Exception ex) {
+					handleException(ex);
+				}
+			}
+		});
+		headerPanel.add(btnSave);
+
 		esdPanel = new EsdPanel();
 		contentPane.add(esdPanel, BorderLayout.CENTER);
 	}
@@ -88,6 +121,34 @@ public class EsdFrame extends JFrame {
 		byte[] pdfBytes = e.esdPrint(esdData);
 		PdfViewer pdfViewer = new PdfViewer(pdfBytes);
 		pdfViewer.show();
+
+	}
+
+	private void save() throws Exception {
+		TransformerFactory factory = TransformerFactory.newInstance();
+		Transformer transformer = factory.newTransformer(new StreamSource(
+				EsdFrame.class
+						.getResourceAsStream("/org/elksd/gui/xml/esd.xsl")));
+
+		Source src = new StreamSource(new ByteArrayInputStream(getXMLSource(
+				esdData).toByteArray()));
+
+		Result res = new StreamResult(System.out);
+
+		transformer.transform(src, res);
+
+	}
+
+	private ByteArrayOutputStream getXMLSource(EsdData data) throws Exception {
+		JAXBContext context;
+
+		ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+
+		context = JAXBContext.newInstance(EsdData.class);
+		Marshaller m = context.createMarshaller();
+		m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+		m.marshal(data, outStream);
+		return outStream;
 
 	}
 

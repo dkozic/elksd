@@ -6,7 +6,8 @@ import java.awt.FlowLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import javax.swing.ImageIcon;
@@ -16,6 +17,14 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Logger;
 import org.elksd.gui.Messages;
@@ -31,6 +40,7 @@ public class ElkFrame extends JFrame {
 	private JPanel contentPane;
 	private ElkPanel elkPanel;
 	private JButton btnPrint;
+	private JButton btnSave;
 
 	public ElkFrame() {
 		setResizable(false);
@@ -75,6 +85,28 @@ public class ElkFrame extends JFrame {
 		});
 		headerPanel.add(btnPrint);
 
+		btnSave = new JButton();
+		btnSave.setPreferredSize(new Dimension(50, 50));
+		btnSave.setMinimumSize(new Dimension(50, 50));
+		btnSave.setMaximumSize(new Dimension(50, 50));
+		btnSave.setHorizontalTextPosition(SwingConstants.CENTER);
+		btnSave.setMnemonic('S');
+		btnSave.setToolTipText(Messages
+				.getString("ElkFrame.btnSave.toolTipText")); //$NON-NLS-1$
+		btnSave.setIcon(new ImageIcon(ElkFrame.class
+				.getResource("/org/elksd/gui/images/disk.png")));
+		btnSave.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+				try {
+					save();
+				} catch (Exception ex) {
+					handleException(ex);
+				}
+			}
+		});
+		headerPanel.add(btnSave);
+
 		elkPanel = new ElkPanel();
 		contentPane.add(elkPanel, BorderLayout.CENTER);
 	}
@@ -91,6 +123,35 @@ public class ElkFrame extends JFrame {
 		pdfViewer.show();
 
 	}
+
+	private void save() throws Exception {
+		TransformerFactory factory = TransformerFactory.newInstance();
+		Transformer transformer = factory.newTransformer(new StreamSource(
+				ElkFrame.class
+						.getResourceAsStream("/org/elksd/gui/xml/elk.xsl")));
+
+		Source src = new StreamSource(new ByteArrayInputStream(getXMLSource(
+				elkData).toByteArray()));
+		
+		Result res = new StreamResult(System.out);
+				
+		transformer.transform(src, res);
+
+	}
+	
+	private ByteArrayOutputStream getXMLSource(ElkData data) throws Exception {
+		JAXBContext context;
+
+		ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+
+		context = JAXBContext.newInstance(ElkData.class);
+		Marshaller m = context.createMarshaller();
+		m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+		m.marshal(data, outStream);
+		return outStream;
+
+	}
+	
 
 	private void handleException(Exception e) {
 		log.error("Error in ElkFrame", e);
