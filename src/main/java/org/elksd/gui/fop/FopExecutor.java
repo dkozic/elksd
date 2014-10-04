@@ -8,8 +8,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -36,8 +34,7 @@ public class FopExecutor {
 
 	private static FopExecutor instance = null;
 
-	public static FopExecutor getInstance() throws ConfigurationException,
-			SAXException, IOException {
+	public static FopExecutor getInstance() throws ConfigurationException, SAXException, IOException {
 		if (instance == null) {
 			instance = new FopExecutor();
 		}
@@ -53,8 +50,7 @@ public class FopExecutor {
 		if (elksdDir.exists()) {
 			log.debug("Directory exists: " + elksdDir);
 		} else {
-			log.debug("Directory does not exists: " + elksdDir
-					+ ". Creating directory.");
+			log.debug("Directory does not exists: " + elksdDir + ". Creating directory.");
 			elksdDir.mkdirs();
 			log.debug("Direcotry created: " + elksdDir);
 		}
@@ -62,8 +58,7 @@ public class FopExecutor {
 		if (fontsDir.exists()) {
 			log.debug("Directory exists: " + fontsDir);
 		} else {
-			log.debug("Directory does not exists: " + fontsDir
-					+ ". Creating directory.");
+			log.debug("Directory does not exists: " + fontsDir + ". Creating directory.");
 			fontsDir.mkdirs();
 			log.debug("Direcotry created: " + fontsDir);
 		}
@@ -78,8 +73,7 @@ public class FopExecutor {
 			FileOutputStream fos = null;
 			try {
 
-				InputStream is = this.getClass().getResourceAsStream(
-						"/fonts/arial.ttf");
+				InputStream is = this.getClass().getResourceAsStream("/fonts/arial.ttf");
 				bis = new BufferedInputStream(is);
 				fos = new FileOutputStream(f1);
 				int b;
@@ -114,8 +108,7 @@ public class FopExecutor {
 			FileOutputStream fos = null;
 			try {
 
-				InputStream is = this.getClass().getResourceAsStream(
-						"/fonts/arialbd.ttf");
+				InputStream is = this.getClass().getResourceAsStream("/fonts/arialbd.ttf");
 				bis = new BufferedInputStream(is);
 				fos = new FileOutputStream(f2);
 				int b;
@@ -144,8 +137,7 @@ public class FopExecutor {
 
 	}
 
-	private FopExecutor() throws ConfigurationException, SAXException,
-			IOException {
+	private FopExecutor() throws ConfigurationException, SAXException, IOException {
 		// Step 1: Construct a FopFactory
 		// (reuse if you plan to render multiple documents!)
 		fopFactory = FopFactory.newInstance();
@@ -155,8 +147,7 @@ public class FopExecutor {
 		// uriResolver.setCustomURIResolver(new CustomPathResolver());
 
 		DefaultConfigurationBuilder cfgBuilder = new DefaultConfigurationBuilder();
-		Configuration cfg = cfgBuilder.build(getClass().getResourceAsStream(
-				"/fop.xconf"));
+		Configuration cfg = cfgBuilder.build(getClass().getResourceAsStream("/fop.xconf"));
 		fopFactory.setUserConfig(cfg);
 
 		String fontBase = copyFonts();
@@ -177,14 +168,12 @@ public class FopExecutor {
 
 			// Step 4: Setup JAXP using identity transformer
 			TransformerFactory factory = TransformerFactory.newInstance();
-			Transformer transformer = factory.newTransformer(new StreamSource(
-					FopExecutor.class
-							.getResourceAsStream("/org/elksd/gui/fop/esd.xsl")));
+			Transformer transformer = factory.newTransformer(new StreamSource(FopExecutor.class
+					.getResourceAsStream("/org/elksd/gui/fop/esd.xsl")));
 
 			// Step 5: Setup input and output for XSLT transformation
 			// Setup input stream
-			Source src = new StreamSource(new ByteArrayInputStream(
-					getXMLSource(esdData).toByteArray()));
+			Source src = new StreamSource(new ByteArrayInputStream(esdData.toXMLByteArray()));
 
 			// Resulting SAX events (the generated FO) must be piped through to
 			// FOP
@@ -208,19 +197,6 @@ public class FopExecutor {
 		}
 	}
 
-	private ByteArrayOutputStream getXMLSource(EsdData data) throws Exception {
-		JAXBContext context;
-
-		ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-
-		context = JAXBContext.newInstance(EsdData.class);
-		Marshaller m = context.createMarshaller();
-		m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-		m.marshal(data, outStream);
-		return outStream;
-
-	}
-
 	private String writeImageFile(byte[] bytes) throws IOException {
 		FileOutputStream fos = null;
 		try {
@@ -228,8 +204,7 @@ public class FopExecutor {
 			fos = new FileOutputStream(imageFile);
 			fos.write(bytes);
 			fos.flush();
-			return imageFile.getAbsolutePath().replace("\\", "/")
-					.replace("C:", "C://");
+			return imageFile.getAbsolutePath().replace("\\", "/").replace("C:", "C://");
 		} finally {
 			if (fos != null) {
 				try {
@@ -253,14 +228,12 @@ public class FopExecutor {
 
 			// Step 4: Setup JAXP using identity transformer
 			TransformerFactory factory = TransformerFactory.newInstance();
-			Transformer transformer = factory.newTransformer(new StreamSource(
-					FopExecutor.class
-							.getResourceAsStream("/org/elksd/gui/fop/elk.xsl")));
+			Transformer transformer = factory.newTransformer(new StreamSource(FopExecutor.class
+					.getResourceAsStream("/org/elksd/gui/fop/elk.xsl")));
 
 			// Step 5: Setup input and output for XSLT transformation
 			// Setup input stream
-			Source src = new StreamSource(new ByteArrayInputStream(
-					getXMLSource(elkData).toByteArray()));
+			Source src = new StreamSource(new ByteArrayInputStream(elkData.toXMLByteArray()));
 
 			// Resulting SAX events (the generated FO) must be piped through to
 			// FOP
@@ -288,23 +261,9 @@ public class FopExecutor {
 		}
 	}
 
-	private ByteArrayOutputStream getXMLSource(ElkData data) throws Exception {
-		JAXBContext context;
-
-		ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-
-		context = JAXBContext.newInstance(ElkData.class);
-		Marshaller m = context.createMarshaller();
-		m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-		m.marshal(data, outStream);
-		return outStream;
-
-	}
-
 	public static class CustomPathResolver implements URIResolver {
 
-		public Source resolve(String href, String base)
-				throws TransformerException {
+		public Source resolve(String href, String base) throws TransformerException {
 			return new StreamSource(getClass().getResourceAsStream(href));
 		}
 

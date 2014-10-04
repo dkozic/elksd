@@ -1,5 +1,9 @@
 package org.elksd.lk;
 
+import java.io.ByteArrayOutputStream;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -331,6 +335,19 @@ public class ElkData {
 	public String toString() {
 		return ReflectionToStringBuilder.toString(this,
 				ToStringStyle.MULTI_LINE_STYLE);
+	}
+
+	public byte[] toXMLByteArray() throws Exception {
+		JAXBContext context;
+
+		ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+
+		context = JAXBContext.newInstance(this.getClass());
+		Marshaller m = context.createMarshaller();
+		m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+		m.marshal(this, outStream);
+		return outStream.toByteArray();
+
 	}
 
 }

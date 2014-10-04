@@ -7,17 +7,19 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -40,11 +42,12 @@ public class EsdFrame extends JFrame {
 	private EsdPanel esdPanel;
 	private JButton btnPrint;
 	private JButton btnSave;
+	private static JFileChooser fileChooser;
 
 	public EsdFrame() {
 		setResizable(false);
-		setIconImage(Toolkit.getDefaultToolkit().getImage(
-				EsdFrame.class.getResource("/org/elksd/gui/images/vcard.png")));
+		setIconImage(Toolkit.getDefaultToolkit()
+				.getImage(EsdFrame.class.getResource("/org/elksd/gui/images/vcard.png")));
 		setTitle(Messages.getString("EsdFrame.title"));
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 450, 520);
@@ -69,10 +72,8 @@ public class EsdFrame extends JFrame {
 		btnPrint.setMaximumSize(new Dimension(50, 50));
 		btnPrint.setHorizontalTextPosition(SwingConstants.CENTER);
 		btnPrint.setMnemonic('P');
-		btnPrint.setToolTipText(Messages
-				.getString("EsdFrame.btnPrint.toolTipText")); //$NON-NLS-1$
-		btnPrint.setIcon(new ImageIcon(EsdFrame.class
-				.getResource("/org/elksd/gui/images/printer.png")));
+		btnPrint.setToolTipText(Messages.getString("EsdFrame.btnPrint.toolTipText")); //$NON-NLS-1$
+		btnPrint.setIcon(new ImageIcon(EsdFrame.class.getResource("/org/elksd/gui/images/printer.png")));
 		btnPrint.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -91,10 +92,8 @@ public class EsdFrame extends JFrame {
 		btnSave.setMaximumSize(new Dimension(50, 50));
 		btnSave.setHorizontalTextPosition(SwingConstants.CENTER);
 		btnSave.setMnemonic('S');
-		btnSave.setToolTipText(Messages
-				.getString("EsdFrame.btnSave.toolTipText")); //$NON-NLS-1$
-		btnSave.setIcon(new ImageIcon(EsdFrame.class
-				.getResource("/org/elksd/gui/images/disk.png")));
+		btnSave.setToolTipText(Messages.getString("EsdFrame.btnSave.toolTipText")); //$NON-NLS-1$
+		btnSave.setIcon(new ImageIcon(EsdFrame.class.getResource("/org/elksd/gui/images/disk.png")));
 		btnSave.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -109,6 +108,40 @@ public class EsdFrame extends JFrame {
 
 		esdPanel = new EsdPanel();
 		contentPane.add(esdPanel, BorderLayout.CENTER);
+	}
+
+	public JFileChooser getFileChooser() {
+		if (fileChooser == null) {
+			fileChooser = new JFileChooser() {
+				@Override
+				public void approveSelection() {
+					File f = getSelectedFile();
+					if (f.exists() && getDialogType() == SAVE_DIALOG) {
+						int result = JOptionPane.showConfirmDialog(this,
+								Messages.getString("EsdFrame.existingFile.text"),
+								Messages.getString("EsdFrame.existingFile.title"), JOptionPane.YES_NO_CANCEL_OPTION);
+						switch (result) {
+						case JOptionPane.YES_OPTION:
+							super.approveSelection();
+							return;
+						case JOptionPane.NO_OPTION:
+							return;
+						case JOptionPane.CLOSED_OPTION:
+							return;
+						case JOptionPane.CANCEL_OPTION:
+							cancelSelection();
+							return;
+						}
+					}
+					super.approveSelection();
+				}
+			};
+
+			FileFilter filter = new FileNameExtensionFilter("XML file", "xml");
+			fileChooser.setFileFilter(filter);
+			fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
+		}
+		return fileChooser;
 	}
 
 	public void setEsdData(EsdData esdData) {
@@ -126,36 +159,29 @@ public class EsdFrame extends JFrame {
 
 	private void save() throws Exception {
 		TransformerFactory factory = TransformerFactory.newInstance();
-		Transformer transformer = factory.newTransformer(new StreamSource(
-				EsdFrame.class
-						.getResourceAsStream("/org/elksd/gui/xml/esd.xsl")));
+		Transformer transformer = factory.newTransformer(new StreamSource(EsdFrame.class
+				.getResourceAsStream("/org/elksd/gui/xml/esd.xsl")));
 
-		Source src = new StreamSource(new ByteArrayInputStream(getXMLSource(
-				esdData).toByteArray()));
+		Source src = new StreamSource(new ByteArrayInputStream(esdData.toXMLByteArray()));
 
-		Result res = new StreamResult(System.out);
+		JFileChooser fc = getFileChooser();
+		File currentDirectory = fc.getCurrentDirectory();
+		File suggestedFile = new File(currentDirectory, esdData.getRegistrationNumberOfVehicle() + ".xml");
+		fc.setSelectedFile(suggestedFile);
+		int returnVal = fc.showSaveDialog(EsdFrame.this);
 
-		transformer.transform(src, res);
-
-	}
-
-	private ByteArrayOutputStream getXMLSource(EsdData data) throws Exception {
-		JAXBContext context;
-
-		ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-
-		context = JAXBContext.newInstance(EsdData.class);
-		Marshaller m = context.createMarshaller();
-		m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-		m.marshal(data, outStream);
-		return outStream;
-
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			File file = fc.getSelectedFile();
+			FileOutputStream fos = new FileOutputStream(file);
+			Result res = new StreamResult(fos);
+			transformer.transform(src, res);
+			fos.close();
+		}
 	}
 
 	private void handleException(Exception e) {
 		log.error("Error in EsdFrame", e);
-		JOptionPane.showMessageDialog(this, e.getMessage(),
-				Messages.getString("EsdFrame.exception.title"),
+		JOptionPane.showMessageDialog(this, e.getMessage(), Messages.getString("EsdFrame.exception.title"),
 				JOptionPane.ERROR_MESSAGE);
 	}
 

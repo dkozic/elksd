@@ -7,18 +7,20 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -41,11 +43,12 @@ public class ElkFrame extends JFrame {
 	private ElkPanel elkPanel;
 	private JButton btnPrint;
 	private JButton btnSave;
+	private static JFileChooser fileChooser;
 
 	public ElkFrame() {
 		setResizable(false);
-		setIconImage(Toolkit.getDefaultToolkit().getImage(
-				ElkFrame.class.getResource("/org/elksd/gui/images/vcard.png")));
+		setIconImage(Toolkit.getDefaultToolkit()
+				.getImage(ElkFrame.class.getResource("/org/elksd/gui/images/vcard.png")));
 		setTitle(Messages.getString("ElkFrame.title"));
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 640, 410);
@@ -69,10 +72,8 @@ public class ElkFrame extends JFrame {
 		btnPrint.setMaximumSize(new Dimension(50, 50));
 		btnPrint.setHorizontalTextPosition(SwingConstants.CENTER);
 		btnPrint.setMnemonic('P');
-		btnPrint.setToolTipText(Messages
-				.getString("ElkFrame.btnPrint.toolTipText")); //$NON-NLS-1$
-		btnPrint.setIcon(new ImageIcon(ElkFrame.class
-				.getResource("/org/elksd/gui/images/printer.png")));
+		btnPrint.setToolTipText(Messages.getString("ElkFrame.btnPrint.toolTipText")); //$NON-NLS-1$
+		btnPrint.setIcon(new ImageIcon(ElkFrame.class.getResource("/org/elksd/gui/images/printer.png")));
 		btnPrint.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -91,10 +92,8 @@ public class ElkFrame extends JFrame {
 		btnSave.setMaximumSize(new Dimension(50, 50));
 		btnSave.setHorizontalTextPosition(SwingConstants.CENTER);
 		btnSave.setMnemonic('S');
-		btnSave.setToolTipText(Messages
-				.getString("ElkFrame.btnSave.toolTipText")); //$NON-NLS-1$
-		btnSave.setIcon(new ImageIcon(ElkFrame.class
-				.getResource("/org/elksd/gui/images/disk.png")));
+		btnSave.setToolTipText(Messages.getString("ElkFrame.btnSave.toolTipText")); //$NON-NLS-1$
+		btnSave.setIcon(new ImageIcon(ElkFrame.class.getResource("/org/elksd/gui/images/disk.png")));
 		btnSave.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -109,6 +108,40 @@ public class ElkFrame extends JFrame {
 
 		elkPanel = new ElkPanel();
 		contentPane.add(elkPanel, BorderLayout.CENTER);
+
+	}
+
+	public JFileChooser getFileChooser() {
+		if (fileChooser == null) {
+			fileChooser = new JFileChooser() {
+				@Override
+				public void approveSelection() {
+					File f = getSelectedFile();
+					if (f.exists() && getDialogType() == SAVE_DIALOG) {
+						int result = JOptionPane.showConfirmDialog(this,
+								Messages.getString("ElkFrame.existingFile.text"),
+								Messages.getString("ElkFrame.existingFile.title"), JOptionPane.YES_NO_CANCEL_OPTION);
+						switch (result) {
+						case JOptionPane.YES_OPTION:
+							super.approveSelection();
+							return;
+						case JOptionPane.NO_OPTION:
+							return;
+						case JOptionPane.CLOSED_OPTION:
+							return;
+						case JOptionPane.CANCEL_OPTION:
+							cancelSelection();
+							return;
+						}
+					}
+					super.approveSelection();
+				}
+			};
+			FileFilter filter = new FileNameExtensionFilter("XML file", "xml");
+			fileChooser.setFileFilter(filter);
+			fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
+		}
+		return fileChooser;
 	}
 
 	public void setElkData(ElkData elkData) throws IOException {
@@ -126,37 +159,29 @@ public class ElkFrame extends JFrame {
 
 	private void save() throws Exception {
 		TransformerFactory factory = TransformerFactory.newInstance();
-		Transformer transformer = factory.newTransformer(new StreamSource(
-				ElkFrame.class
-						.getResourceAsStream("/org/elksd/gui/xml/elk.xsl")));
+		Transformer transformer = factory.newTransformer(new StreamSource(ElkFrame.class
+				.getResourceAsStream("/org/elksd/gui/xml/elk.xsl")));
 
-		Source src = new StreamSource(new ByteArrayInputStream(getXMLSource(
-				elkData).toByteArray()));
-		
-		Result res = new StreamResult(System.out);
-				
-		transformer.transform(src, res);
+		Source src = new StreamSource(new ByteArrayInputStream(elkData.toXMLByteArray()));
 
+		JFileChooser fc = getFileChooser();
+		File currentDirectory = fc.getCurrentDirectory();
+		File suggestedFile = new File(currentDirectory, elkData.getPersonalNumber() + ".xml");
+		fc.setSelectedFile(suggestedFile);
+		int returnVal = fc.showSaveDialog(ElkFrame.this);
+
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			File file = fc.getSelectedFile();
+			FileOutputStream fos = new FileOutputStream(file);
+			Result res = new StreamResult(fos);
+			transformer.transform(src, res);
+			fos.close();
+		}
 	}
-	
-	private ByteArrayOutputStream getXMLSource(ElkData data) throws Exception {
-		JAXBContext context;
-
-		ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-
-		context = JAXBContext.newInstance(ElkData.class);
-		Marshaller m = context.createMarshaller();
-		m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-		m.marshal(data, outStream);
-		return outStream;
-
-	}
-	
 
 	private void handleException(Exception e) {
 		log.error("Error in ElkFrame", e);
-		JOptionPane.showMessageDialog(this, e.getMessage(),
-				Messages.getString("ElkFrame.exception.title"),
+		JOptionPane.showMessageDialog(this, e.getMessage(), Messages.getString("ElkFrame.exception.title"),
 				JOptionPane.ERROR_MESSAGE);
 	}
 
