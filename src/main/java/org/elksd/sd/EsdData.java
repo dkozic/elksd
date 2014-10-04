@@ -3,6 +3,7 @@ package org.elksd.sd;
 import java.io.ByteArrayOutputStream;
 
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -538,7 +539,7 @@ public class EsdData {
 				ToStringStyle.MULTI_LINE_STYLE);
 	}
 
-	public byte[] toXMLByteArray() throws Exception {
+	public byte[] toXMLByteArray() throws JAXBException {
 		JAXBContext context;
 
 		ByteArrayOutputStream outStream = new ByteArrayOutputStream();

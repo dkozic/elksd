@@ -158,12 +158,6 @@ public class EsdFrame extends JFrame {
 	}
 
 	private void save() throws Exception {
-		TransformerFactory factory = TransformerFactory.newInstance();
-		Transformer transformer = factory.newTransformer(new StreamSource(EsdFrame.class
-				.getResourceAsStream("/org/elksd/gui/xml/esd.xsl")));
-
-		Source src = new StreamSource(new ByteArrayInputStream(esdData.toXMLByteArray()));
-
 		JFileChooser fc = getFileChooser();
 		File currentDirectory = fc.getCurrentDirectory();
 		File suggestedFile = new File(currentDirectory, esdData.getRegistrationNumberOfVehicle() + ".xml");
@@ -172,10 +166,8 @@ public class EsdFrame extends JFrame {
 
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			File file = fc.getSelectedFile();
-			FileOutputStream fos = new FileOutputStream(file);
-			Result res = new StreamResult(fos);
-			transformer.transform(src, res);
-			fos.close();
+			EsdSaver saver = new EsdSaver();
+			saver.saveToFile(esdData, file);
 		}
 	}
 

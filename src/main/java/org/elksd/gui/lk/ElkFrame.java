@@ -6,9 +6,7 @@ import java.awt.FlowLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 import javax.swing.ImageIcon;
@@ -21,12 +19,6 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.xml.transform.Result;
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Logger;
 import org.elksd.gui.Messages;
@@ -158,11 +150,6 @@ public class ElkFrame extends JFrame {
 	}
 
 	private void save() throws Exception {
-		TransformerFactory factory = TransformerFactory.newInstance();
-		Transformer transformer = factory.newTransformer(new StreamSource(ElkFrame.class
-				.getResourceAsStream("/org/elksd/gui/xml/elk.xsl")));
-
-		Source src = new StreamSource(new ByteArrayInputStream(elkData.toXMLByteArray()));
 
 		JFileChooser fc = getFileChooser();
 		File currentDirectory = fc.getCurrentDirectory();
@@ -172,10 +159,8 @@ public class ElkFrame extends JFrame {
 
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			File file = fc.getSelectedFile();
-			FileOutputStream fos = new FileOutputStream(file);
-			Result res = new StreamResult(fos);
-			transformer.transform(src, res);
-			fos.close();
+			ElkSaver saver = new ElkSaver();
+			saver.saveToFile(elkData, file);
 		}
 	}
 

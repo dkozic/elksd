@@ -3,6 +3,7 @@ package org.elksd.lk;
 import java.io.ByteArrayOutputStream;
 
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -333,11 +334,10 @@ public class ElkData {
 
 	@Override
 	public String toString() {
-		return ReflectionToStringBuilder.toString(this,
-				ToStringStyle.MULTI_LINE_STYLE);
+		return ReflectionToStringBuilder.toString(this, ToStringStyle.MULTI_LINE_STYLE);
 	}
 
-	public byte[] toXMLByteArray() throws Exception {
+	public byte[] toXMLByteArray() throws JAXBException {
 		JAXBContext context;
 
 		ByteArrayOutputStream outStream = new ByteArrayOutputStream();

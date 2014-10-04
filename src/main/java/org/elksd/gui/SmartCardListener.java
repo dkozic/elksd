@@ -8,7 +8,9 @@ import javax.smartcardio.Card;
 import org.apache.log4j.Logger;
 import org.elksd.gui.SmartCardReader.ReaderListener;
 import org.elksd.gui.lk.ElkFrame;
+import org.elksd.gui.lk.ElkSaver;
 import org.elksd.gui.sd.EsdFrame;
+import org.elksd.gui.sd.EsdSaver;
 import org.elksd.lk.ElkData;
 import org.elksd.lk.ElkReader;
 import org.elksd.sd.EsdData;
@@ -43,12 +45,18 @@ public class SmartCardListener implements ReaderListener {
 				ElkFrame elkFrame = new ElkFrame();
 				elkFrame.setElkData(elkData);
 				elkFrame.setVisible(true);
+				
+				ElkSaver elkSaver = new ElkSaver();
+				elkSaver.saveToFile(elkData);
 			} else if (Arrays.equals(baATR, ESD_ATR)) {
 				EsdReader esdReader = new EsdReader(card);
 				EsdData esdData = esdReader.readEsd();
 				EsdFrame esdFrame = new EsdFrame();
 				esdFrame.setEsdData(esdData);
 				esdFrame.setVisible(true);
+				
+				EsdSaver esdSaver = new EsdSaver();
+				esdSaver.saveToFile(esdData);
 			} else {
 				throw new IllegalArgumentException("ATR is not supported"
 						+ Util.bytesToHex(baATR));
