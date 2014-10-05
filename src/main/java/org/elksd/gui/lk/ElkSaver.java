@@ -15,9 +15,12 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.elksd.lk.ElkData;
+import org.elksd.util.PreferencesUtil;
 
 public class ElkSaver {
 
+	private PreferencesUtil preferences = new PreferencesUtil();
+	
 	public ElkSaver() {
 	}
 
@@ -35,8 +38,8 @@ public class ElkSaver {
 	}
 	
 	public void saveToFile(ElkData elkData) throws JAXBException, TransformerException, IOException {
-		File userHome = new File(System.getProperty("user.home"));
-		File file = new File(userHome, elkData.getPersonalNumber() + ".xml");
+		File userHome = preferences.getLkFolder();
+		File file = new File(userHome, "LK_" + elkData.getPersonalNumber() + ".xml");
 		saveToFile(elkData, file);
 		
 	}

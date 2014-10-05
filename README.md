@@ -18,7 +18,7 @@ Features:
 
 * It is localized in English and Serbian language
 
-* The data can be presented as PDF file  
+* The data can be presented as PDF or XML file  
 
 * eLKSD detects presence of the smart card in the reader and starts reading automatically 
 

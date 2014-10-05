@@ -16,8 +16,11 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.elksd.gui.lk.ElkFrame;
 import org.elksd.sd.EsdData;
+import org.elksd.util.PreferencesUtil;
 
 public class EsdSaver {
+	
+	private PreferencesUtil preferences = new PreferencesUtil();
 	
 	public EsdSaver() {
 	}
@@ -36,8 +39,8 @@ public class EsdSaver {
 	}
 	
 	public void saveToFile(EsdData esdData) throws JAXBException, TransformerException, IOException {
-		File userHome = new File(System.getProperty("user.home"));
-		File file = new File(userHome, esdData.getRegistrationNumberOfVehicle() + ".xml");
+		File userHome = preferences.getSdFolder();
+		File file = new File(userHome, "SD_" + esdData.getRegistrationNumberOfVehicle() + ".xml");
 		saveToFile(esdData, file);
 		
 	}

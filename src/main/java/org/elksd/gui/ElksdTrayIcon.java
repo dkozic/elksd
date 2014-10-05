@@ -25,6 +25,7 @@ public class ElksdTrayIcon extends TrayIcon {
 	private static Logger log = Logger.getLogger(ElksdTrayIcon.class);
 
 	private SystemTray tray = null;
+	private PreferencesUtil preferences = new PreferencesUtil();
 
 	private static final String ELKSD_LOGGER = "org.elksd";
 	public ElksdTrayIcon() {
@@ -43,6 +44,8 @@ public class ElksdTrayIcon extends TrayIcon {
 		MenuItem infoItem = new MenuItem("Info");
 		MenuItem debugItem = new MenuItem("Debug");
 		MenuItem noneItem = new MenuItem("None");
+		MenuItem optionsItem = new MenuItem(
+				Messages.getString("ElksdTrayIcon.options"));
 		MenuItem exitItem = new MenuItem(
 				Messages.getString("ElksdTrayIcon.exit"));
 		Menu languageMenu = new Menu(
@@ -68,6 +71,7 @@ public class ElksdTrayIcon extends TrayIcon {
 		languageMenu.add(language_srItem);
 		languageMenu.add(language_sr_RS_LatItem);
 		languageMenu.add(language_enItem);
+		popup.add(optionsItem);
 		popup.add(exitItem);
 
 		setPopupMenu(popup);
@@ -135,7 +139,7 @@ public class ElksdTrayIcon extends TrayIcon {
 				if ("sr".equals(item.getActionCommand())) {
 					Locale newLocale = new Locale("sr");
 					Locale.setDefault(newLocale);
-					PreferencesUtil.saveLocale(newLocale);
+					preferences.saveLocale(newLocale);
 					String message = Messages
 							.getString("language_change", "sr");
 					displayMessage("eLKSD", message, MessageType.INFO);
@@ -143,7 +147,7 @@ public class ElksdTrayIcon extends TrayIcon {
 				} else if ("sr_RS_Lat".equals(item.getActionCommand())) {
 					Locale newLocale = new Locale("sr_RS_Lat");
 					Locale.setDefault(newLocale);
-					PreferencesUtil.saveLocale(newLocale);
+					preferences.saveLocale(newLocale);
 					String message = Messages.getString("language_change",
 							"sr_RS_Lat");
 					displayMessage("eLKSD", message, MessageType.INFO);
@@ -151,7 +155,7 @@ public class ElksdTrayIcon extends TrayIcon {
 				} else if ("en".equals(item.getActionCommand())) {
 					Locale newLocale = Locale.ENGLISH;
 					Locale.setDefault(newLocale);
-					PreferencesUtil.saveLocale(newLocale);
+					preferences.saveLocale(newLocale);
 					String message = Messages
 							.getString("language_change", "en");
 					displayMessage("eLKSD", message, MessageType.INFO);
@@ -163,6 +167,13 @@ public class ElksdTrayIcon extends TrayIcon {
 		language_enItem.addActionListener(languageListener);
 		language_srItem.addActionListener(languageListener);
 		language_sr_RS_LatItem.addActionListener(languageListener);
+
+		optionsItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				OptionsDialog optionsDialog = new OptionsDialog();
+				optionsDialog.setVisible(true);
+			}
+		});
 
 		exitItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {

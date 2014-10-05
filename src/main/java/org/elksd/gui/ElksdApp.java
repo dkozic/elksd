@@ -40,7 +40,8 @@ public class ElksdApp {
 		UIManager.put("swing.boldMetal", Boolean.FALSE);
 
 		// Reading Locale from preferences and setting default locale
-		Locale locale = PreferencesUtil.getLocale();
+		PreferencesUtil preferences = new PreferencesUtil();
+		Locale locale = preferences.getLocale();
 		Locale.setDefault(locale);
 
 		try {
