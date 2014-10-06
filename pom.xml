@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.elksd</groupId>
 	<artifactId>elksd</artifactId>
-	<version>0.3.0</version>
+	<version>0.4.0-SNAPSHOT</version>
 	<description>Reader of Serbian Identity Cards and Vehicle Registration Cards</description>
 	<url>https://github.com/dkozic/elksd</url>
 
@@ -13,7 +13,7 @@
 
 	<scm>
 		<developerConnection>scm:git:https://github.com/dkozic/elksd.git</developerConnection>
-		<tag>elksd-0.3.0</tag>
+		<tag>HEAD</tag>
 	</scm>
 
 	<licenses>
